@@ -10,9 +10,11 @@ const normalizeAddress = sigUtil.normalize
 // Keyrings:
 const SimpleKeyring = require('eth-simple-keyring')
 const HdKeyring = require('eth-hd-keyring')
+const LedgerKeyring = require('eth-ledger-keyring')
 const keyringTypes = [
   SimpleKeyring,
   HdKeyring,
+  LedgerKeyring
 ]
 
 class KeyringController extends EventEmitter {
@@ -185,6 +187,7 @@ class KeyringController extends EventEmitter {
     .then((accounts) => {
       switch (type) {
         case 'Simple Key Pair':
+        case 'Ledger Hardware Keyring': // Comparing first account is sufficient to distinguish Ledger devices
           const isNotIncluded = !accounts.find((key) => key === newAccount[0] || key === ethUtil.stripHexPrefix(newAccount[0]))
           return (isNotIncluded) ? Promise.resolve(newAccount) : Promise.reject(new Error('The account you\'re are trying to import is a duplicate'))
         default:
